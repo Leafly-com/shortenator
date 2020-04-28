@@ -2,6 +2,7 @@
 
 require 'shorten_urls/version'
 require 'shorten_urls/configuration'
+require 'bitly'
 require 'net/http'
 
 module ShortenUrls
@@ -10,26 +11,27 @@ module ShortenUrls
   # link_regex = /(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?/;
   # Your code goes here...
   class << self
-    attr_accessor :configuration
+    attr_accessor :config
 
-    def configuration
-      @configuration ||= Configuration.new
+    def config
+      @config ||= Configuration.new
     end
 
     def reset
-      @configuration = Configuration.new
+      @config = Configuration.new
     end
 
     def configure
-      yield(configuration)
+      yield(config)
     end
 
     def shorten_url(
       text,
-      domains = @configuration.domains
+      domains = config.domains
     )
+      client = Bitly::API::Client.new(token: config.bitly_token)
       text.split(' ').map do |word|
-        shortenable_link?(word, domains) ? shorten_link(word) : word
+        shortenable_link?(word, domains) ? shorten_link(word, client) : word
       end.join(' ')
     end
 
@@ -41,14 +43,14 @@ module ShortenUrls
     end
 
     def valid_link?(link)
-      uri = URI link
-      response = Net::HTTP.get_response(uri)
+      # uri = URI link
+      response = Net::HTTP.get_response(URI.parse(link))
 
       response.code.to_i == 200 || response.code.to_i == 301
     end
 
-    def shorten_link(link)
-      'short_link'
+    def shorten_link(link, client)
+      client.shorten(long_url: link).link
     end
 
     def get_host_without_www(url)

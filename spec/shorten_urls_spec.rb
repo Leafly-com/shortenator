@@ -8,8 +8,11 @@ RSpec.describe ShortenUrls do
   it 'does something useful' do
     ShortenUrls.configure do |config|
       config.domains = ['leafly.com']
+      config.bitly_token = 'BITLY_TOKEN'
     end
 
-    expect(ShortenUrls.shorten_url('text http://leafly.com')).to eq('text short_link')
+    VCR.use_cassette RSpec.current_example.full_description do
+      expect(ShortenUrls.shorten_url('text http://leafly.com')).to eq('text https://leafly.info/1CVNybj')
+    end
   end
 end
