@@ -52,7 +52,10 @@ module ShortenUrls
     end
 
     def shorten_link(link, client)
-      client.shorten(long_url: link).link
+      short_link = client.shorten(long_url: link).link
+      short_link.slice! 'https://' if config.remove_protocol
+
+      short_link
     end
 
     def get_host_without_www(url)

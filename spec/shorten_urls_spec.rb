@@ -27,4 +27,12 @@ RSpec.describe ShortenUrls do
       expect(ShortenUrls.shorten_url('text http://leafly.com')).to eq('text https://leafly.info/1CVNybj')
     end
   end
+
+  it 'can shorten links to have no protcol' do
+    ShortenUrls.config.remove_protocol = true
+
+    VCR.use_cassette RSpec.current_example.full_description do
+      expect(ShortenUrls.shorten_url('text http://leafly.com')).to eq('text leafly.info/1CVNybj')
+    end
+  end
 end
