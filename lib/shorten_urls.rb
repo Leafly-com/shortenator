@@ -43,10 +43,12 @@ module ShortenUrls
     end
 
     def valid_link?(link)
-      # uri = URI link
       response = Net::HTTP.get_response(URI.parse(link))
+      if response.code == '301'
+        response = Net::HTTP.get_response(URI.parse(response.header['location']))
+      end
 
-      response.code.to_i == 200 || response.code.to_i == 301
+      response.code.to_i == 200
     end
 
     def shorten_link(link, client)
