@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'shorten_urls/version'
-require 'shorten_urls/configuration'
+require 'shortenator/version'
+require 'shortenator/configuration'
 require 'bitly'
 require 'net/http'
 
-module ShortenUrls
+module Shortenator
   class Error < StandardError; end
 
   # link_regex = /(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?/;

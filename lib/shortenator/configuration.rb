@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module ShortenUrls
+module Shortenator
   class Configuration
     attr_accessor :domains
     attr_accessor :bitly_token

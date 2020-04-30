@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in shorten_urls.gemspec
+# Specify your gem's dependencies in shortenator.gemspec
 gemspec
 
 gem 'bitly'

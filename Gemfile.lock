@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    shorten_urls (0.1.0)
+    shortenator (0.1.0)
       bitly
 
 GEM
@@ -57,7 +57,7 @@ DEPENDENCIES
   bitly
   rake (~> 12.0)
   rspec (~> 3.0)
-  shorten_urls!
+  shortenator!
   vcr
   webmock (~> 3.5)
 
