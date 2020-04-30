@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     shorten_urls (0.1.0)
+      bitly
 
 GEM
   remote: https://rubygems.org/
