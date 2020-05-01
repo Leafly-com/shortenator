@@ -27,28 +27,31 @@ Or install it yourself as:
 ## Usage
 
 ### Configuration:
-To configure Shortenator here is all available configs
+To configure Shortenator create `shortenator.rb` in `/config/initializers` then copy and modify the following code block to your liking:
 ```ruby
+# in config/initializers/shortenator.rb
+require 'shortenator'
+
 Shortenator.configure do |config|
-    config.domains = ['example.com']
-    config.bitly_token = 'BITLY_TOKEN'
-    config.remove_protocol = true # OPTIONAL false by default
+  config.domains = ['example.com'] # These are the array of domains that will be shortened if found
+  config.bitly_token = ENV['BITLY_TOKEN']
+  config.remove_protocol = true # OPTIONAL false by default
 end
 ```
 
 Setting `config.remove_protocol` to `true` will remove the `https://` from the beginning of the shortened link, saving you some more precious characters.
 
 ### Implementation:
-To use Shortenator, just call `shorten_urls`
+To use Shortenator call `shorten_urls`
 ```ruby
 def send_sms(text, number)
-    shortened_links = Shortenator.shorten_urls(text)
-    # more code that probably needs to happen before sending...
-    TextingService.send_text(text, number)
+  shortened_links = Shortenator.shorten_urls(text)
+  # more code that probably needs to happen before sending...
+  TextingService.send_text(text, number)
 end
 
 send_sms('Thanks for your order, track the status here: http://example.com/orders/897987987?utm_medium=sms&utm_campaign=weekend-blowout-1234', 1234567890)
-# Actual message sent: 'thanks for your order, track the status here: bit.ly/1111aaa'
+# Actual message sent: 'Thanks for your order, track the status here: bit.ly/1111aaa'
 ```
 
 ## Development
