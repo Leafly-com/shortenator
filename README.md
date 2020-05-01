@@ -42,10 +42,10 @@ end
 Setting `config.remove_protocol` to `true` will remove the `https://` from the beginning of the shortened link, saving you some more precious characters.
 
 ### Implementation:
-To use Shortenator call `shorten_urls`
+To use Shortenator call `search_and_shorten_links`
 ```ruby
 def send_sms(text, number)
-  shortened_links = Shortenator.shorten_urls(text)
+  shortened_links = Shortenator.search_and_shorten_links(text)
   # more code that probably needs to happen before sending...
   TextingService.send_text(text, number)
 end

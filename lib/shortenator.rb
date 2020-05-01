@@ -25,7 +25,7 @@ module Shortenator
       yield(config)
     end
 
-    def shorten_url(
+    def search_and_shorten_links(
       text,
       domains = config.domains
     )
