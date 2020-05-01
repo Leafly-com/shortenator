@@ -35,6 +35,8 @@ module Shortenator
       end.join(' ')
     end
 
+    private
+
     def shortenable_link?(link, domains)
       domains.each do |domain|
         return valid_link?(link) if link.include?(get_host_without_www(domain))
