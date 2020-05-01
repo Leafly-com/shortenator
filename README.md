@@ -1,8 +1,12 @@
 # Shortenator
+Has this ever happened to you?
+> **Manager**: We need to cut costs in our texting service! Our links are creating additional texts. How can we fix this?
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/shortenator`. To experiment with that code, run `bin/console` for an interactive prompt.
+*Then this is the gem for you!*
 
-TODO: Delete this and the text above, and describe your gem
+Supply the domains you'd like to be shorten and start passing your text through the Shortenator TODAY!
+
+<small>*currently only works with bitly. no purchase necessary. apache license 2.0 terms and conditions apply*</small>
 
 ## Installation
 
@@ -22,7 +26,30 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Configuration:
+To configure Shortenator here is all available configs
+```ruby
+Shortenator.configure do |config|
+    config.domains = ['example.com']
+    config.bitly_token = 'BITLY_TOKEN'
+    config.remove_protocol = true # OPTIONAL false by default
+end
+```
+
+Setting `config.remove_protocol` to `true` will remove the `https://` from the beginning of the shortened link, saving you some more precious characters.
+
+### Implementation:
+To use Shortenator, just call `shorten_urls`
+```ruby
+def send_sms(text, number)
+    shortened_links = Shortenator.shorten_urls(text)
+    # more code that probably needs to happen before sending...
+    TextingService.send_text(text, number)
+end
+
+send_sms('Thanks for your order, track the status here: http://example.com/orders/897987987?utm_medium=sms&utm_campaign=weekend-blowout-1234', 1234567890)
+# Actual message sent: 'thanks for your order, track the status here: bit.ly/1111aaa'
+```
 
 ## Development
 
@@ -32,4 +59,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/shortenator.
+Bug reports and pull requests are welcome on GitHub at https://github.com/leafly/shortenator.

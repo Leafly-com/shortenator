@@ -8,16 +8,15 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Philippe Batigne']
   spec.email         = ['philippe.batigne@leafly.com']
 
-  spec.summary       = 'Write a short summary, because RubyGems requires one.'
-  spec.description   = 'Write a longer description or delete this line.'
+  spec.summary       = 'To find and shorten links in text!'
   spec.homepage      = 'https://leafly.com/'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.3.0')
 
-  spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+  spec.metadata['allowed_push_host'] = "http://leafly.com'"
 
   spec.metadata['homepage_uri'] = spec.homepage
-  spec.metadata['source_code_uri'] = 'http://github.com/username/repo.git'
-  spec.metadata['changelog_uri'] = 'http://github.com/username/repo/blob/master/README.md'
+  spec.metadata['source_code_uri'] = 'http://github.com/leafly/shortenator.git'
+  spec.metadata['changelog_uri'] = 'http://github.com/leafly/shortenator/blob/master/README.md'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
