@@ -33,6 +33,8 @@ VCR.configure do |config|
   # Only want VCR to intercept requests to external URLs.
   config.ignore_localhost = true
   config.ignore_hosts 'json-schema.org'
+
+  config.configure_rspec_metadata!
 end
 
 class << VCR

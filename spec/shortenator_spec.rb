@@ -16,19 +16,15 @@ RSpec.describe Shortenator do
     expect(Shortenator.shorten_url('text http://google.com')).to eq('text http://google.com')
   end
 
-  it 'does not shorten domains that applies but return a 404' do
-    VCR.use_cassette RSpec.current_example.full_description do
-      expect(Shortenator.shorten_url('text http://leafly.com/BAD_PATH')).to eq('text http://leafly.com/BAD_PATH')
-    end
+  it 'does not shorten domains that applies but return a 404', :vcr do
+    expect(Shortenator.shorten_url('text http://leafly.com/BAD_PATH')).to eq('text http://leafly.com/BAD_PATH')
   end
 
-  it 'shortens valid links that applies' do
-    VCR.use_cassette RSpec.current_example.full_description do
-      expect(Shortenator.shorten_url('text http://leafly.com')).to eq('text https://leafly.info/1CVNybj')
-    end
+  it 'shortens valid links that applies', :vcr do
+    expect(Shortenator.shorten_url('text http://leafly.com')).to eq('text https://leafly.info/1CVNybj')
   end
 
-  it 'can shorten links to have no protcol' do
+  it 'can shorten links to have no protcol', :vcr do
     Shortenator.config.remove_protocol = true
 
     VCR.use_cassette RSpec.current_example.full_description do
