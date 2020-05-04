@@ -27,8 +27,6 @@ RSpec.describe Shortenator do
   it 'can shorten links to have no protcol', :vcr do
     Shortenator.config.remove_protocol = true
 
-    VCR.use_cassette RSpec.current_example.full_description do
-      expect(Shortenator.search_and_shorten_links('text http://leafly.com')).to eq('text leafly.info/1CVNybj')
-    end
+    expect(Shortenator.search_and_shorten_links('text http://leafly.com')).to eq('text leafly.info/1CVNybj')
   end
 end
