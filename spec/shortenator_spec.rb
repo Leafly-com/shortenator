@@ -8,6 +8,10 @@ RSpec.describe Shortenator do
     end
   end
 
+  after do
+    Shortenator.reset
+  end
+
   it 'has a version number' do
     expect(Shortenator::VERSION).not_to be nil
   end
