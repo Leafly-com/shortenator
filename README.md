@@ -45,9 +45,9 @@ Setting `config.remove_protocol` to `true` will remove the `https://` from the b
 To use Shortenator call `search_and_shorten_links`
 ```ruby
 def send_sms(text, number)
-  shortened_links = Shortenator.search_and_shorten_links(text)
+  text_with_shortened_links = Shortenator.search_and_shorten_links(text)
   # more code that probably needs to happen before sending...
-  TextingService.send_text(text, number)
+  TextingService.send_text(text_with_shortened_links, number)
 end
 
 send_sms('Thanks for your order, track the status here: http://example.com/orders/897987987?utm_medium=sms&utm_campaign=weekend-blowout-1234', 1234567890)
