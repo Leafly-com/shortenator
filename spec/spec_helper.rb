@@ -27,7 +27,7 @@ VCR.configure do |config|
     match_requests_on: %i[method path]
   }
 
-  # config.allow_http_connections_when_no_cassette = true
+  config.allow_http_connections_when_no_cassette = true
   # config.debug_logger = $stdout
 
   # Only want VCR to intercept requests to external URLs.
