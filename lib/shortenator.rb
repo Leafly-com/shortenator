@@ -46,10 +46,9 @@ module Shortenator
 
     def valid_link?(link)
       response = Net::HTTP.get_response(URI.parse(link))
-      if response.code == '301'
+      if response.code == '301' || response.code == '302'
         response = Net::HTTP.get_response(URI.parse(response.header['location']))
       end
-
       response.code.to_i == 200
     end
 
