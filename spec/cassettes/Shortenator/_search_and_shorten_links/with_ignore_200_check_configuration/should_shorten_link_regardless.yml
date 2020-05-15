@@ -1,0 +1,52 @@
+---
+http_interactions:
+  - request:
+      method: post
+      uri: https://api-ssl.bitly.com/v4/shorten
+      body:
+        encoding: UTF-8
+        string: '{"long_url":"https://leafly.com/"}'
+      headers:
+        Accept-Encoding:
+          - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+        Accept:
+          - application/json
+        User-Agent:
+          - Ruby Bitly/2.0.0
+        Authorization:
+          - Bearer BITLY_TOKEN
+        Content-Type:
+          - application/json
+    response:
+      status:
+        code: 200
+        message: OK
+      headers:
+        Server:
+          - nginx
+        Date:
+          - Fri, 15 May 2020 15:41:06 GMT
+        Content-Type:
+          - application/json
+        Content-Length:
+          - "274"
+        Strict-Transport-Security:
+          - max-age=31536000; includeSubDomains
+        X-Xss-Protection:
+          - 1; mode=blockFilter
+        X-Content-Type-Options:
+          - nosniff
+        X-Frame-Options:
+          - DENY
+        Content-Security-Policy:
+          - default-src 'none
+        Via:
+          - 1.1 google
+        Alt-Svc:
+          - clear
+      body:
+        encoding: UTF-8
+        string: '{"created_at":"2020-05-01T19:52:27+0000","id":"leafly.info/35ny2W6","link":"https://leafly.info/35ny2W6","custom_bitlinks":[],"long_url":"https://leafly.com/","archived":false,"tags":[],"deeplinks":[],"references":{"group":"https://api-ssl.bitly.com/v4/groups/Be1ojaikusR"}}'
+      http_version:
+    recorded_at: Fri, 15 May 2020 15:41:06 GMT
+recorded_with: VCR 4.0.0

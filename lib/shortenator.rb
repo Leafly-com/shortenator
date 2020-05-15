@@ -27,19 +27,22 @@ module Shortenator
 
     def search_and_shorten_links(
       text,
-      domains = config.domains
+      domains = config.domains,
+      ignore_200_check: config.ignore_200_check
     )
       client = Bitly::API::Client.new(token: config.bitly_token)
       text.split(' ').map do |word|
-        shortenable_link?(word, domains) ? shorten_link(word, client) : word
+        shortenable_link?(word, domains, ignore_200_check) ? shorten_link(word, client) : word
       end.join(' ')
     end
 
     private
 
-    def shortenable_link?(link, domains)
+    def shortenable_link?(link, domains, ignore_200_check)
       domains.each do |domain|
-        return valid_link?(link) if link.include?(get_host_without_www(domain))
+        if link.include?(get_host_without_www(domain))
+          return (ignore_200_check || valid_link?(link))
+        end
       end
       false
     end
