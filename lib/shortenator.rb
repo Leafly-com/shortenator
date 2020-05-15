@@ -30,6 +30,8 @@ module Shortenator
       domains = config.domains,
       ignore_200_check: config.ignore_200_check
     )
+      validate_config
+
       client = Bitly::API::Client.new(token: config.bitly_token)
       text.split(' ').map do |word|
         shortenable_link?(word, domains, ignore_200_check) ? shorten_link(word, client) : word
@@ -37,6 +39,12 @@ module Shortenator
     end
 
     private
+
+    def validate_config
+      unless Integer === config.retry_amount && config.retry_amount >= 0
+        raise Error, "retry amount must be a number equal or greater than 0, saw #{config.retry_amount}"
+      end
+    end
 
     def shortenable_link?(link, domains, ignore_200_check)
       domains.each do |domain|
@@ -56,10 +64,20 @@ module Shortenator
     end
 
     def shorten_link(link, client)
-      short_link = client.shorten(long_url: link).link
-      short_link.slice! 'https://' if config.remove_protocol
+      retries = 0
+      loop do
+        begin
+          bitly_response = client.shorten(long_url: link)
+          short_link = bitly_response.link
+          short_link.slice! 'https://' if config.remove_protocol
 
-      short_link
+          return short_link
+        rescue Bitly::Error => e
+          retries += 1
+
+          return link if retries >= config.retry_amount
+        end
+      end
     end
 
     def get_host_without_www(url)

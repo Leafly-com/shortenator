@@ -5,6 +5,7 @@ RSpec.describe Shortenator do
   let(:domains) { ['leafly.com'] }
   let(:remove_protocol) { false }
   let(:ignore_200_check) { false }
+  let(:retry_amount) { 1 }
 
   before do
     Shortenator.configure do |config|
@@ -12,6 +13,7 @@ RSpec.describe Shortenator do
       config.domains = domains
       config.remove_protocol = remove_protocol
       config.ignore_200_check = ignore_200_check
+      config.retry_amount = retry_amount
     end
   end
 
@@ -63,6 +65,25 @@ RSpec.describe Shortenator do
 
       it 'should shorten link regardless' do
         expect(subject).to eq('text https://leafly.info/35ny2W6')
+      end
+    end
+
+    context 'with retry_amount configuration' do
+      let(:retry_amount) { 3 }
+      let(:url) { 'http://leafly.com/' }
+
+      it 'should shorten link after 3 attempts' do
+        expect(subject).to eq('text https://leafly.info/1CVNybj')
+      end
+    end
+
+    context 'with incorrect retry_amount configuration' do
+      let(:retry_amount) { -1 }
+      let(:url) { 'http://leafly.com/' }
+      let(:error_msg) { "retry amount must be a number equal or greater than 0, saw #{retry_amount}" }
+
+      it 'should fail immediately' do
+        expect { subject }.to raise_error(error_msg)
       end
     end
   end
