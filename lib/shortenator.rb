@@ -65,6 +65,7 @@ module Shortenator
 
     def shorten_link(link, client)
       retries = 0
+      link = replace_localhost(link) if link.include? 'localhost'
       loop do
         begin
           bitly_response = client.shorten(long_url: link)
@@ -78,6 +79,10 @@ module Shortenator
           return link if retries >= config.retry_amount
         end
       end
+    end
+
+    def replace_localhost(link)
+      link.gsub(/localhost:[0-9]+/, config.localhost_replacement)
     end
 
     def get_host_without_www(url)

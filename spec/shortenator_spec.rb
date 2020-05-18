@@ -6,6 +6,7 @@ RSpec.describe Shortenator do
   let(:remove_protocol) { false }
   let(:ignore_200_check) { false }
   let(:retry_amount) { 1 }
+  let(:localhost_replacement) { 'example.com' }
 
   before do
     Shortenator.configure do |config|
@@ -14,6 +15,7 @@ RSpec.describe Shortenator do
       config.remove_protocol = remove_protocol
       config.ignore_200_check = ignore_200_check
       config.retry_amount = retry_amount
+      config.localhost_replacement = localhost_replacement
     end
   end
 
@@ -86,7 +88,16 @@ RSpec.describe Shortenator do
         expect { subject }.to raise_error(error_msg)
       end
     end
-  end
 
+    context 'when given localhost' do
+      let(:localhost_replacement) { 'example-two.com' }
+      let(:domains) { ['localhost'] }
+      let(:ignore_200_check) { true }
+      let(:url) { 'https://localhost:3000/site/path' }
+
+      it 'rewrites to example-two.com' do
+        expect(subject).to eq('text https://leafly.info/3bIC5xY')
+      end
+    end
   end
 end
