@@ -2,10 +2,10 @@
 http_interactions:
   - request:
       method: post
-      uri: https://api-ssl.bitly.com/v4/shorten
+      uri: https://api-ssl.bitly.com/v4/bitlinks
       body:
         encoding: UTF-8
-        string: '{"long_url":"https://example-two.com/site/path"}'
+        string: '{"long_url":"https://example-two.com/site/path","tags":[]}}'
       headers:
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3

@@ -7,7 +7,7 @@ RSpec.describe Shortenator do
   let(:ignore_200_check) { false }
   let(:retry_amount) { 1 }
   let(:localhost_replacement) { 'example.com' }
-  let(:tags) { ['tag_name'] }
+  let(:tags) { [] }
 
   before do
     Shortenator.configure do |config|
@@ -39,8 +39,14 @@ RSpec.describe Shortenator do
 
     it 'should link' do
       expect(subject).to eq('text https://leafly.info/1CVNybj')
+    end
 
-      expect(get_bitlink_details('leafly.info/1CVNyb')['tags']).to eq(tags)
+    context 'with tags' do
+      let(:tags) { ['tag_name'] }
+
+      it 'should be associated to link' do
+        expect(get_bitlink_details('leafly.info/1CVNyb')['tags']).to eq(tags)
+      end
     end
 
     context 'with unconfigured domain' do
@@ -107,6 +113,7 @@ RSpec.describe Shortenator do
     end
 
     context 'with additional tags' do
+      let(:tags) { ['tag_name'] }
       let(:more_tags) { ['more_tags'] }
       let(:additonal_args) { [additional_tags: more_tags] }
       let(:url) { 'https://leafly.com/finder' }
@@ -120,6 +127,7 @@ RSpec.describe Shortenator do
     end
 
     context 'with new tags' do
+      let(:tags) { ['tag_name'] }
       let(:new_tags) { ['newer_tag'] }
       let(:additonal_args) { [tags: new_tags] }
       let(:url) { 'https://leafly.com/strains' }
