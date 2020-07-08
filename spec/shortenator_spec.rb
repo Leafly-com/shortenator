@@ -7,6 +7,7 @@ RSpec.describe Shortenator do
   let(:ignore_200_check) { false }
   let(:retry_amount) { 1 }
   let(:localhost_replacement) { 'example.com' }
+  let(:tags) { ['tag_name'] }
 
   before do
     Shortenator.configure do |config|
@@ -16,6 +17,7 @@ RSpec.describe Shortenator do
       config.ignore_200_check = ignore_200_check
       config.retry_amount = retry_amount
       config.localhost_replacement = localhost_replacement
+      config.tags =  tags
     end
   end
 
@@ -30,11 +32,15 @@ RSpec.describe Shortenator do
   context '::search_and_shorten_links', :vcr do
     let(:original_text) { "text #{url}" }
     let(:url) { 'http://leafly.com' }
+    let(:original_args) { [original_text] }
+    let(:additonal_args) { [] }
 
-    subject { Shortenator.search_and_shorten_links(original_text) }
+    subject { Shortenator.search_and_shorten_links(*original_args, *additonal_args) }
 
     it 'should link' do
       expect(subject).to eq('text https://leafly.info/1CVNybj')
+
+      expect(get_bitlink_details('leafly.info/1CVNyb')['tags']).to eq(tags)
     end
 
     context 'with unconfigured domain' do
@@ -99,5 +105,35 @@ RSpec.describe Shortenator do
         expect(subject).to eq('text https://leafly.info/3bIC5xY')
       end
     end
+
+    context 'with additional tags' do
+      let(:more_tags) { ['more_tags'] }
+      let(:additonal_args) { [additional_tags: more_tags] }
+      let(:url) { 'https://leafly.com/finder' }
+
+      it 'saves link with addtional tags with config' do
+        subject
+
+        # NOTE: It took some time for the tags to save between the post and retrieval
+        expect(get_bitlink_details('leafly.info/2Z8NtQw')['tags']).to eq(tags + more_tags)
+      end
+    end
+
+    context 'with new tags' do
+      let(:new_tags) { ['newer_tag'] }
+      let(:additonal_args) { [tags: new_tags] }
+      let(:url) { 'https://leafly.com/strains' }
+
+      it 'disregards config tags, sets new one' do
+        subject
+
+        # NOTE: It took some time for the tags to save between the post and retrieval
+        expect(get_bitlink_details('leafly.info/3gFjOV2')['tags']).to eq(new_tags)
+      end
+    end
   end
+end
+
+def get_bitlink_details(bitlink)
+  Shortenator.bitly_client.bitlink(bitlink: bitlink).response.body
 end

@@ -28,14 +28,21 @@ module Shortenator
     def search_and_shorten_links(
       text,
       domains = config.domains,
-      ignore_200_check: config.ignore_200_check
+      ignore_200_check: config.ignore_200_check,
+      tags: config.tags,
+      additional_tags: []
     )
+      @all_tags = tags + additional_tags
       validate_config
 
-      client = Bitly::API::Client.new(token: config.bitly_token)
+      client = bitly_client(token: config.bitly_token)
       text.split(' ').map do |word|
         shortenable_link?(word, domains, ignore_200_check) ? shorten_link(word, client) : word
       end.join(' ')
+    end
+
+    def bitly_client(token: config.bitly_token)
+      Bitly::API::Client.new(token: token)
     end
 
     private
@@ -68,7 +75,7 @@ module Shortenator
       link = replace_localhost(link) if link.include? 'localhost'
       loop do
         begin
-          bitly_response = client.shorten(long_url: link)
+          bitly_response = client.create_bitlink(long_url: link, tags: @all_tags)
           short_link = bitly_response.link
           short_link.slice! 'https://' if config.remove_protocol
 
