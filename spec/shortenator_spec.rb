@@ -155,7 +155,7 @@ RSpec.describe Shortenator do
         end
       end
 
-      context 'when set with not the account\'s default group' do
+      context 'when provided a different group guid' do
         let(:group_guid) { custom_group_guid }
 
         it 'assigns new link id and new custom group_guid' do
