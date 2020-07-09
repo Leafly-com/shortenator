@@ -32,10 +32,9 @@ RSpec.describe Shortenator do
   context '::search_and_shorten_links', :vcr do
     let(:original_text) { "text #{url}" }
     let(:url) { 'http://leafly.com' }
-    let(:original_args) { [original_text] }
     let(:additonal_args) { [] }
 
-    subject { Shortenator.search_and_shorten_links(*original_args, *additonal_args) }
+    subject { Shortenator.search_and_shorten_links(original_text, *additonal_args) }
 
     it 'should link' do
       expect(subject).to eq('text https://leafly.info/1CVNybj')
