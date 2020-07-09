@@ -37,6 +37,7 @@ Shortenator.configure do |config|
   config.bitly_token = ENV['BITLY_TOKEN']
   config.remove_protocol = true # OPTIONAL false by default
   config.default_tags = ['repo_name'] # OPTIONAL empty by default, let you auto tag all bit.ly links for organization
+  config.bitly_group_guid = ENV['DEFAULT_BITLY_GROUP_GUID'] #OPTIONAL the bitly docs recommend to set this in the event you accidently switch your token's group and hit a smaller limit than you intended. source: https://dev.bitly.com/v4/#operation/createFullBitlink
 end
 ```
 
@@ -63,6 +64,11 @@ Need to tag certain things differently depending on the situation? You can use t
 ```ruby
   # Need to over write the tags set in the configs? Use the `tags:` param!
   Shortenator.search_and_shorten_links("text", tags: ["new tag1", "new tag2"])
+```
+
+Have multiple groups that links can be shortened from? Bitly groups can set their own custom domains and can have different limits from each other while a part of the same organization. Here's how you can use different groups all around your code
+```ruby
+  Shortenator.search_and_shorten_links("text", bitly_group_guid: ENV['OTHER_BITLY_GROUP_GUID')
 ```
 
 ## Development
