@@ -50,3 +50,6 @@ Style/RedundantRegexpEscape:
 
 Style/SlicingWithRange:
   Enabled: false
+
+Layout/LineLength:
+  Enabled: false
