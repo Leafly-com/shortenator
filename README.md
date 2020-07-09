@@ -62,7 +62,7 @@ Need to tag certain things differently depending on the situation? You can use t
 ```
 ```ruby
   # Need to over write the tags set in the configs? Use the `tags:` param!
-  Shortenator.search_and_shorten_links("text", tags: ["new tag1", "new tag2" ])
+  Shortenator.search_and_shorten_links("text", tags: ["new tag1", "new tag2"])
 ```
 
 ## Development
