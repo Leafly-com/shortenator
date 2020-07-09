@@ -32,12 +32,12 @@ module Shortenator
       tags: config.default_tags,
       additional_tags: []
     )
-      @all_tags = tags + additional_tags
+      all_tags = tags + additional_tags
       validate_config
 
       client = bitly_client(token: config.bitly_token)
       text.split(' ').map do |word|
-        shortenable_link?(word, domains, ignore_200_check) ? shorten_link(word, client) : word
+        shortenable_link?(word, domains, ignore_200_check) ? shorten_link(word, client, tags: all_tags) : word
       end.join(' ')
     end
 
@@ -70,12 +70,12 @@ module Shortenator
       response.code.to_i == 200
     end
 
-    def shorten_link(link, client)
+    def shorten_link(link, client, tags: [])
       retries = 0
       link = replace_localhost(link) if link.include? 'localhost'
       loop do
         begin
-          bitly_response = client.create_bitlink(long_url: link, tags: @all_tags)
+          bitly_response = client.create_bitlink(long_url: link, tags: tags)
           short_link = bitly_response.link
           short_link.slice! 'https://' if config.remove_protocol
 
