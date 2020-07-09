@@ -103,10 +103,10 @@ http_interactions:
     recorded_at: Fri, 15 May 2020 16:29:03 GMT
   - request:
       method: post
-      uri: https://api-ssl.bitly.com/v4/shorten
+      uri: https://api-ssl.bitly.com/v4/bitlinks
       body:
         encoding: UTF-8
-        string: '{"long_url":"http://leafly.com/"}'
+        string: '{"long_url":"http://leafly.com/","tags":[]}}'
       headers:
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -152,10 +152,10 @@ http_interactions:
     recorded_at: Fri, 15 May 2020 16:29:03 GMT
   - request:
       method: post
-      uri: https://api-ssl.bitly.com/v4/shorten
+      uri: https://api-ssl.bitly.com/v4/bitlinks
       body:
         encoding: UTF-8
-        string: '{"long_url":"http://leafly.com/"}'
+        string: '{"long_url":"http://leafly.com/","tags":[]}}'
       headers:
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -201,10 +201,10 @@ http_interactions:
     recorded_at: Fri, 15 May 2020 16:29:43 GMT
   - request:
       method: post
-      uri: https://api-ssl.bitly.com/v4/shorten
+      uri: https://api-ssl.bitly.com/v4/bitlinks
       body:
         encoding: UTF-8
-        string: '{"long_url":"http://leafly.com/"}'
+        string: '{"long_url":"http://leafly.com/","tags":[]}}'
       headers:
         Accept-Encoding:
           - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
