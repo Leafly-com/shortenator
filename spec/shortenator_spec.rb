@@ -8,7 +8,7 @@ RSpec.describe Shortenator do
   let(:retry_amount) { 1 }
   let(:localhost_replacement) { 'example.com' }
   let(:tags) { [] }
-  let(:group_guid) { nil }
+  let(:bitly_group_guid) { nil }
 
   before do
     Shortenator.configure do |config|
@@ -19,7 +19,7 @@ RSpec.describe Shortenator do
       config.retry_amount = retry_amount
       config.localhost_replacement = localhost_replacement
       config.tags =  tags
-      config.group_guid = group_guid
+      config.bitly_group_guid = bitly_group_guid
     end
   end
 
@@ -142,33 +142,33 @@ RSpec.describe Shortenator do
       end
     end
 
-    context 'with group_guid' do
+    context 'with bitly_group_guid' do
       let(:url) { 'https://www.leafly.com/strains' }
       let(:default_short_url) { 'https://leafly.info/2ZPPyQD' }
       let(:default_short_text) { "text #{default_short_url}" }
-      let(:custom_group_guid) { 'Be1ojaikusR' }
+      let(:custom_bitly_group_guid) { 'Be1ojaikusR' }
 
-      it 'will use default group_guid when not set' do
+      it 'will use default bitly group_guid when not set' do
         expect(subject).to eq(default_short_text)
         expect(get_bitlink_details('leafly.info/2ZPPyQD')['references']['group']).to end_with('B01103Ajtve')
       end
 
       context 'when provided a different group guid' do
-        let(:group_guid) { custom_group_guid }
+        let(:bitly_group_guid) { custom_bitly_group_guid }
 
-        it 'assigns new link id and new custom group_guid' do
+        it 'assigns new link id and new custom bitly_group_guid' do
           expect(subject).to_not eq(default_short_text)
           expect(subject).to eq('text https://leafly.info/2CgYGWs')
-          expect(get_bitlink_details('leafly.info/2CgYGWs')['references']['group']).to end_with(custom_group_guid)
+          expect(get_bitlink_details('leafly.info/2CgYGWs')['references']['group']).to end_with(custom_bitly_group_guid)
         end
       end
 
       context 'can be set at runtime' do
-        let(:additonal_args) { [group_guid: custom_group_guid] }
+        let(:additonal_args) { [bitly_group_guid: custom_bitly_group_guid] }
 
-        it 'shortens link with new group_guid' do
+        it 'shortens link with new bitly_group_guid' do
           expect(subject).to eq('text https://leafly.info/2CgYGWs')
-          expect(get_bitlink_details('leafly.info/2CgYGWs')['references']['group']).to end_with(custom_group_guid)
+          expect(get_bitlink_details('leafly.info/2CgYGWs')['references']['group']).to end_with(custom_bitly_group_guid)
         end
       end
     end
