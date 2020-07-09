@@ -36,6 +36,7 @@ Shortenator.configure do |config|
   config.domains = ['example.com'] # These are the array of domains that will be shortened if found
   config.bitly_token = ENV['BITLY_TOKEN']
   config.remove_protocol = true # OPTIONAL false by default
+  config.default_tags = ['repo_name'] # OPTIONAL empty by default, let you auto tag all bit.ly links for organization
 end
 ```
 
@@ -52,6 +53,16 @@ end
 
 send_sms('Thanks for your order, track the status here: http://example.com/orders/897987987?utm_medium=sms&utm_campaign=weekend-blowout-1234', 1234567890)
 # Actual message sent: 'Thanks for your order, track the status here: bit.ly/1111aaa'
+```
+
+Need to tag certain things differently depending on the situation? You can use these params separately, or together, at runtime.
+```ruby
+  # Sometimes need to add additional tags for certain parts of your app? Use the `additional_tags:` param!
+  Shortenator.search_and_shorten_links("text", additional_tags: ["new feature"])
+```
+```ruby
+  # Need to over write the tags set in the configs? Use the `tags:` param!
+  Shortenator.search_and_shorten_links("text", tags: ["new tag1", "new tag2"])
 ```
 
 ## Development
