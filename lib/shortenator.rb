@@ -29,7 +29,7 @@ module Shortenator
       text,
       domains = config.domains,
       ignore_200_check: config.ignore_200_check,
-      tags: config.tags,
+      tags: config.default_tags,
       additional_tags: []
     )
       @all_tags = tags + additional_tags

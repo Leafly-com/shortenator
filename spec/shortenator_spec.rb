@@ -7,7 +7,7 @@ RSpec.describe Shortenator do
   let(:ignore_200_check) { false }
   let(:retry_amount) { 1 }
   let(:localhost_replacement) { 'example.com' }
-  let(:tags) { [] }
+  let(:default_tags) { [] }
 
   before do
     Shortenator.configure do |config|
@@ -17,7 +17,7 @@ RSpec.describe Shortenator do
       config.ignore_200_check = ignore_200_check
       config.retry_amount = retry_amount
       config.localhost_replacement = localhost_replacement
-      config.tags =  tags
+      config.default_tags = default_tags
     end
   end
 
@@ -42,10 +42,10 @@ RSpec.describe Shortenator do
     end
 
     context 'with tags' do
-      let(:tags) { ['tag_name'] }
+      let(:default_tags) { ['tag_name'] }
 
       it 'should be associated to link' do
-        expect(get_bitlink_details('leafly.info/1CVNyb')['tags']).to eq(tags)
+        expect(get_bitlink_details('leafly.info/1CVNyb')['tags']).to eq(default_tags)
       end
     end
 
@@ -113,7 +113,7 @@ RSpec.describe Shortenator do
     end
 
     context 'with additional tags' do
-      let(:tags) { ['tag_name'] }
+      let(:default_tags) { ['tag_name'] }
       let(:more_tags) { ['more_tags'] }
       let(:additonal_args) { [additional_tags: more_tags] }
       let(:url) { 'https://leafly.com/finder' }
@@ -122,12 +122,12 @@ RSpec.describe Shortenator do
         subject
 
         # NOTE: It took some time for the tags to save between the post and retrieval
-        expect(get_bitlink_details('leafly.info/2Z8NtQw')['tags']).to eq(tags + more_tags)
+        expect(get_bitlink_details('leafly.info/2Z8NtQw')['tags']).to eq(default_tags + more_tags)
       end
     end
 
     context 'with new tags' do
-      let(:tags) { ['tag_name'] }
+      let(:default_tags) { ['tag_name'] }
       let(:new_tags) { ['newer_tag'] }
       let(:additonal_args) { [tags: new_tags] }
       let(:url) { 'https://leafly.com/strains' }

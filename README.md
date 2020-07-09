@@ -36,7 +36,7 @@ Shortenator.configure do |config|
   config.domains = ['example.com'] # These are the array of domains that will be shortened if found
   config.bitly_token = ENV['BITLY_TOKEN']
   config.remove_protocol = true # OPTIONAL false by default
-  config.tags = ['repo_name'] # OPTIONAL empty by default, let you auto tag all bit.ly links for organization
+  config.default_tags = ['repo_name'] # OPTIONAL empty by default, let you auto tag all bit.ly links for organization
 end
 ```
 
