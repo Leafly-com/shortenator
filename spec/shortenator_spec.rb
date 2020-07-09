@@ -7,7 +7,7 @@ RSpec.describe Shortenator do
   let(:ignore_200_check) { false }
   let(:retry_amount) { 1 }
   let(:localhost_replacement) { 'example.com' }
-  let(:tags) { [] }
+  let(:default_tags) { [] }
   let(:bitly_group_guid) { nil }
 
   before do
@@ -18,7 +18,7 @@ RSpec.describe Shortenator do
       config.ignore_200_check = ignore_200_check
       config.retry_amount = retry_amount
       config.localhost_replacement = localhost_replacement
-      config.tags =  tags
+      config.default_tags = default_tags
       config.bitly_group_guid = bitly_group_guid
     end
   end
@@ -34,20 +34,19 @@ RSpec.describe Shortenator do
   context '::search_and_shorten_links', :vcr do
     let(:original_text) { "text #{url}" }
     let(:url) { 'http://leafly.com' }
-    let(:original_args) { [original_text] }
     let(:additonal_args) { [] }
 
-    subject { Shortenator.search_and_shorten_links(*original_args, *additonal_args) }
+    subject { Shortenator.search_and_shorten_links(original_text, *additonal_args) }
 
     it 'should link' do
       expect(subject).to eq('text https://leafly.info/1CVNybj')
     end
 
     context 'with tags' do
-      let(:tags) { ['tag_name'] }
+      let(:default_tags) { ['tag_name'] }
 
       it 'should be associated to link' do
-        expect(get_bitlink_details('leafly.info/1CVNyb')['tags']).to eq(tags)
+        expect(get_bitlink_details('leafly.info/1CVNyb')['tags']).to eq(default_tags)
       end
     end
 
@@ -115,7 +114,7 @@ RSpec.describe Shortenator do
     end
 
     context 'with additional tags' do
-      let(:tags) { ['tag_name'] }
+      let(:default_tags) { ['tag_name'] }
       let(:more_tags) { ['more_tags'] }
       let(:additonal_args) { [additional_tags: more_tags] }
       let(:url) { 'https://leafly.com/finder' }
@@ -124,12 +123,12 @@ RSpec.describe Shortenator do
         subject
 
         # NOTE: It took some time for the tags to save between the post and retrieval
-        expect(get_bitlink_details('leafly.info/2Z8NtQw')['tags']).to eq(tags + more_tags)
+        expect(get_bitlink_details('leafly.info/2Z8NtQw')['tags']).to eq(default_tags + more_tags)
       end
     end
 
     context 'with new tags' do
-      let(:tags) { ['tag_name'] }
+      let(:default_tags) { ['tag_name'] }
       let(:new_tags) { ['newer_tag'] }
       let(:additonal_args) { [tags: new_tags] }
       let(:url) { 'https://leafly.com/strains' }

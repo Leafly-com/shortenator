@@ -2,7 +2,7 @@
 
 module Shortenator
   class Configuration
-    attr_accessor :domains, :bitly_token, :remove_protocol, :ignore_200_check, :retry_amount, :localhost_replacement, :tags, :bitly_group_guid
+    attr_accessor :domains, :bitly_token, :remove_protocol, :ignore_200_check, :retry_amount, :localhost_replacement, :default_tags, :
 
     def initialize
       @domains = nil
@@ -11,7 +11,7 @@ module Shortenator
       @ignore_200_check = false
       @retry_amount = 3
       @localhost_replacement = 'example.com'
-      @tags = []
+      @default_tags = []
       @bitly_group_guid = nil
     end
   end
