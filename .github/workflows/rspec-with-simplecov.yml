@@ -2,7 +2,7 @@ env:
   RUBY_VERSION: 2.6
 
 name: Rails tests
-on: [push,pull_request]
+on: [pull_request]
 jobs:
   rubocop-test:
     name: Rubocop
@@ -31,7 +31,7 @@ jobs:
           bundler install --jobs 4 --retry 3
       - name: Run tests
         run: COVERAGE=true bundler exec rake
-      - name: Upload coverage results    
+      - name: Upload coverage results
         uses: actions/upload-artifact@master
         if: always()
         with:
