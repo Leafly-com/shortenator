@@ -148,11 +148,9 @@ RSpec.describe Shortenator do
       let(:default_short_text) { "text #{default_short_url}" }
       let(:custom_group_guid) { 'Be1ojaikusR' }
 
-      context 'when not explicitly set' do
-        it 'shortens to the default group_guid' do
-          expect(subject).to eq(default_short_text)
-          expect(get_bitlink_details('leafly.info/2ZPPyQD')['references']['group']).to end_with('B01103Ajtve')
-        end
+      it 'will use default group_guid when not set' do
+        expect(subject).to eq(default_short_text)
+        expect(get_bitlink_details('leafly.info/2ZPPyQD')['references']['group']).to end_with('B01103Ajtve')
       end
 
       context 'when provided a different group guid' do
