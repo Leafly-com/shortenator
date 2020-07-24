@@ -3,7 +3,7 @@
 module Shortenator
   class Configuration
     attr_accessor \
-      :bitly_group_guid
+      :bitly_group_guid,
       :bitly_token, 
       :default_tags, 
       :domains, 
