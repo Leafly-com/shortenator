@@ -4,6 +4,7 @@ require 'shortenator/version'
 require 'shortenator/configuration'
 require 'bitly'
 require 'net/http'
+require 'logger'
 
 module Shortenator
   class Error < StandardError; end
@@ -56,6 +57,34 @@ module Shortenator
       unless Integer === config.retry_amount && config.retry_amount >= 0
         raise Error, "retry amount must be a number equal or greater than 0, saw #{config.retry_amount}"
       end
+      if(!caching_model.nil?)
+        if !caching_model_is_correct_fields?
+          raise Error, "Model is not valid, it must be an object (perferably ActiveRecord) with a `long_link` and `short_link`"
+        end
+        if !caching_model_is_correct_methods?
+          raise Error, "Model is not valid, it must be an object (perferably ActiveRecord) with `find_by(long_link:)` and `create(long_link:, short_link:)` methods"
+        end
+      end
+    end
+
+    def caching_model_is_correct_fields?
+      attrs_to_find = [
+        :long_link,
+        :long_link=,
+        :short_link,
+        :short_link=
+      ]
+      
+      caching_model.instance_methods(false).any? { |attr| attrs_to_find.include?(attr) }
+    end
+
+    def caching_model_is_correct_methods?
+      methods_to_find = [
+        :find_by,
+        :create
+      ]
+      
+      caching_model.singleton_class.instance_methods.any? { |method| methods_to_find.include?(method) }
     end
 
     def shortenable_link?(link, domains, ignore_200_check)
@@ -80,7 +109,7 @@ module Shortenator
       link = replace_localhost(link) if link.include? 'localhost'
       
       if(has_cached_link(link))
-        return caching_model.find(long_link: link).first.short_link
+        return caching_model.find_by(long_link: link).first.short_link
       else 
         loop do
           begin
@@ -102,14 +131,15 @@ module Shortenator
 
     def has_cached_link(link)
       return false if caching_model.nil?
-      results = caching_model.find(long_link: link)
+      results = caching_model.find_by(long_link: link)
       case results.size
       when 0
         false
       when 1
         true
       else
-        Logger.new(STDOUT).info { "found more than one shortened link" }
+        Logger.new(STDOUT).info { "found more than one shortened link, will be using first one" }
+        true
       end
     end
 
