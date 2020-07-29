@@ -38,6 +38,7 @@ Shortenator.configure do |config|
   config.remove_protocol = true # OPTIONAL false by default
   config.default_tags = ['repo_name'] # OPTIONAL empty by default, let you auto tag all bit.ly links for organization
   config.bitly_group_guid = ENV['DEFAULT_BITLY_GROUP_GUID'] #OPTIONAL the bitly docs recommend to set this in the event you accidently switch your token's group and hit a smaller limit than you intended. source: https://dev.bitly.com/v4/#operation/createFullBitlink
+  config.caching_model = LinkLookup # OPTIONAL this allows you to save your shortened links to your own database table to avoid hitting a service's API rate limits, more details below.
 end
 ```
 
@@ -70,6 +71,13 @@ Have multiple groups that links can be shortened from? Bitly groups can set thei
 ```ruby
   Shortenator.search_and_shorten_links("text", bitly_group_guid: ENV['OTHER_BITLY_GROUP_GUID')
 ```
+
+Need to cache your shortened links? Here's how to achieve that.
+Recommended approach: 
+* An ActiveRecord model with a `long_link` and `short_link` as strings
+* in `shortenator.rb` add to the config like so: `config.caching_model = <MODEL NAME HERE>`
+
+Now once a link that's been shortened before attempts to be shortened, you'll save yourself a call to whatever service you use.
 
 ## Development
 
