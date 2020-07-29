@@ -2,11 +2,15 @@
 
 require 'shortenator/version'
 require 'shortenator/configuration'
+require 'helpers/cachable'
+require 'helpers/link_helpers'
 require 'bitly'
 require 'net/http'
 require 'logger'
 
 module Shortenator
+  include Cachable
+  include LinkHelpers
   class Error < StandardError; end
 
   # link_regex = /(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?/;
@@ -20,10 +24,6 @@ module Shortenator
 
     def reset
       @config = Configuration.new
-    end
-
-    def caching_model
-      config.caching_model
     end
 
     def configure
@@ -58,33 +58,8 @@ module Shortenator
         raise Error, "retry amount must be a number equal or greater than 0, saw #{config.retry_amount}"
       end
       if(!caching_model.nil?)
-        if !caching_model_is_correct_fields?
-          raise Error, "Model is not valid, it must be an object (perferably ActiveRecord) with a `long_link` and `short_link`"
-        end
-        if !caching_model_is_correct_methods?
-          raise Error, "Model is not valid, it must be an object (perferably ActiveRecord) with `find_by(long_link:)` and `create(long_link:, short_link:)` methods"
-        end
+        validate_caching_model
       end
-    end
-
-    def caching_model_is_correct_fields?
-      attrs_to_find = [
-        :long_link,
-        :long_link=,
-        :short_link,
-        :short_link=
-      ]
-      
-      caching_model.instance_methods(false).any? { |attr| attrs_to_find.include?(attr) }
-    end
-
-    def caching_model_is_correct_methods?
-      methods_to_find = [
-        :find_by,
-        :create
-      ]
-      
-      caching_model.singleton_class.instance_methods.any? { |method| methods_to_find.include?(method) }
     end
 
     def shortenable_link?(link, domains, ignore_200_check)
@@ -94,14 +69,6 @@ module Shortenator
         end
       end
       false
-    end
-
-    def valid_link?(link)
-      response = Net::HTTP.get_response(URI.parse(link))
-      if response.code == '301' || response.code == '302'
-        response = Net::HTTP.get_response(URI.parse(response.header['location']))
-      end
-      response.code.to_i == 200
     end
 
     def shorten_link(link, client, bitly_group_guid: nil, tags: [])
@@ -129,28 +96,5 @@ module Shortenator
       end
     end
 
-    def has_cached_link(link)
-      return false if caching_model.nil?
-      results = caching_model.find_by(long_link: link)
-      case results.size
-      when 0
-        false
-      when 1
-        true
-      else
-        Logger.new(STDOUT).info { "found more than one shortened link, will be using first one" }
-        true
-      end
-    end
-
-    def replace_localhost(link)
-      link.gsub(/localhost:[0-9]+/, config.localhost_replacement)
-    end
-
-    def get_host_without_www(url)
-      url = "http://#{url}" if URI.parse(url).scheme.nil?
-      host = URI.parse(url).host.downcase
-      host.start_with?('www.') ? host[4..-1] : host
-    end
   end
 end
