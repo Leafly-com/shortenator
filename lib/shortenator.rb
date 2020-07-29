@@ -88,6 +88,7 @@ module Shortenator
 
             return short_link
           rescue Bitly::Error => e
+            Logger.new(STDOUT).warn(e)
             retries += 1
             
             return link if retries >= config.retry_amount
