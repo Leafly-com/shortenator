@@ -180,31 +180,31 @@ RSpec.describe Shortenator do
 
         context 'saves a link to reuse later' do
           let(:caching_model) { BitlyLinks }
-          
+
           it 'makes a bitly call and saves the link' do
             # Given
             allow(BitlyLinks).to(receive(:find_by).with(long_link: url).and_return([]))
-            allow(BitlyLinks).to(receive(:create).with(long_link: url, short_link: "https://leafly.info/2CgYGWs"))
-            
+            allow(BitlyLinks).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
+
             # Expect
             # A call to find an existing link
             expect(caching_model).to(receive(:find_by).with(long_link: url).and_return([]))
-            # a call to bitly 
-            mock_object = instance_double(Bitly::API::Bitlink, link: "https://leafly.info/2CgYGWs")
+            # a call to bitly
+            mock_object = instance_double(Bitly::API::Bitlink, link: 'https://leafly.info/2CgYGWs')
             expect_any_instance_of(Bitly::API::Client).to(receive(:create_bitlink).and_return(mock_object))
             # a call to cache
-            expect(caching_model).to(receive(:create).with(long_link: url, short_link: "https://leafly.info/2CgYGWs"))
+            expect(caching_model).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
 
             expect(subject).to eq('text https://leafly.info/2CgYGWs')
           end
 
           it 'since the link is saved, no bitly call made' do
-            returned_data = BitlyLinks.new()
+            returned_data = BitlyLinks.new
             returned_data.long_link = url
-            returned_data.short_link = "https://leafly.info/2CgYGWs"
+            returned_data.short_link = 'https://leafly.info/2CgYGWs'
             # Given
             allow(BitlyLinks).to(receive(:find_by).with(long_link: url).and_return([returned_data]))
-            
+
             # Expect
             # A call to find an existing link
             expect(caching_model).to(receive(:find_by).with(long_link: url).and_return([returned_data]))
@@ -215,9 +215,9 @@ RSpec.describe Shortenator do
           end
 
           it 'will log warning when more than one shortened link' do
-            returned_data = BitlyLinks.new()
+            returned_data = BitlyLinks.new
             returned_data.long_link = url
-            returned_data.short_link = "https://leafly.info/2CgYGWs"
+            returned_data.short_link = 'https://leafly.info/2CgYGWs'
             # Given
             allow(BitlyLinks).to(receive(:find_by).with(long_link: url).and_return([returned_data, returned_data]))
 
@@ -229,16 +229,16 @@ RSpec.describe Shortenator do
         context 'with model with incorrect attributes' do
           let(:caching_model) { Shlinks }
 
-          it 'throws an error' do 
+          it 'throws an error' do
             # expect(subject).to eq('text https://leafly.info/2CgYGWs')
-            expect { subject }.to raise_error("Model is not valid, it must be an object (perferably ActiveRecord) with a `long_link` and `short_link`")
+            expect { subject }.to raise_error('Model is not valid, it must be an object (perferably ActiveRecord) with a `long_link` and `short_link`')
           end
         end
         context 'with model without correct methods' do
           let(:caching_model) { LilLinks }
-          
+
           it 'throws an error' do
-            expect { subject }.to raise_error("Model is not valid, it must be an object (perferably ActiveRecord) with `find_by(long_link:)` and `create(long_link:, short_link:)` methods")
+            expect { subject }.to raise_error('Model is not valid, it must be an object (perferably ActiveRecord) with `find_by(long_link:)` and `create(long_link:, short_link:)` methods')
           end
         end
       end
@@ -254,8 +254,9 @@ class BitlyLinks
   attr_accessor \
     :long_link,
     :short_link
-  
+
   def find_by(*args); end
+
   def create(*args); end
 end
 
@@ -265,6 +266,7 @@ class Shlinks
     :mini_link
 
   def find_by(*args); end
+
   def create(*args); end
 end
 

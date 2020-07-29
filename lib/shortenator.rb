@@ -57,7 +57,8 @@ module Shortenator
       unless Integer === config.retry_amount && config.retry_amount >= 0
         raise Error, "retry amount must be a number equal or greater than 0, saw #{config.retry_amount}"
       end
-      if(!caching_model.nil?)
+
+      unless caching_model.nil?
         validate_caching_model
       end
     end
@@ -74,15 +75,15 @@ module Shortenator
     def shorten_link(link, client, bitly_group_guid: nil, tags: [])
       retries = 0
       link = replace_localhost(link) if link.include? 'localhost'
-      
-      if(has_cached_link(link))
-        return caching_model.find_by(long_link: link).first.short_link
-      else 
+
+      if cached_link?(link)
+        caching_model.find_by(long_link: link).first.short_link
+      else
         loop do
           begin
             bitly_response = client.create_bitlink(long_url: link, tags: tags, group_guid: bitly_group_guid)
             short_link = bitly_response.link
-            caching_model.create(long_link: link, short_link: short_link) unless caching_model.nil?
+            caching_model&.create(long_link: link, short_link: short_link)
 
             short_link.slice! 'https://' if config.remove_protocol
 
@@ -90,12 +91,11 @@ module Shortenator
           rescue Bitly::Error => e
             Logger.new(STDOUT).warn(e)
             retries += 1
-            
+
             return link if retries >= config.retry_amount
           end
         end
       end
     end
-
   end
 end

@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 require 'logger'
 
 module LinkHelpers
   module ClassMethods
     def valid_link?(link)
       response = Net::HTTP.get_response(URI.parse(link))
-      if response.code == '301' || response.code == '302'
-        response = Net::HTTP.get_response(URI.parse(response.header['location']))
-      end
+      response = Net::HTTP.get_response(URI.parse(response.header['location'])) if response.code == '301' || response.code == '302'
       response.code.to_i == 200
     end
 
@@ -22,7 +22,7 @@ module LinkHelpers
   end
   extend ClassMethods
 
-  def self.included( other )
-    other.extend( ClassMethods )
+  def self.included(other)
+    other.extend(ClassMethods)
   end
 end
