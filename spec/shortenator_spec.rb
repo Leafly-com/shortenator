@@ -230,15 +230,14 @@ RSpec.describe Shortenator do
           let(:caching_model) { Shlinks }
 
           it 'throws an error' do
-            # expect(subject).to eq('text https://leafly.info/2CgYGWs')
-            expect { subject }.to raise_error('Model is not valid, it must be an object (perferably ActiveRecord) with a `long_link` and `short_link`')
+            expect { subject }.to raise_error(Cachable::AttributesError, /`long_link` and `short_link`/)
           end
         end
         context 'with model without correct methods' do
           let(:caching_model) { LilLinks }
 
           it 'throws an error' do
-            expect { subject }.to raise_error('Model is not valid, it must be an object (perferably ActiveRecord) with `find_by(long_link:)` and `create(long_link:, short_link:)` methods')
+            expect { subject }.to raise_error(Cachable::AttributesError, /`find_by\(long_link:\)` and `create\(long_link:, short_link:\)`/)
           end
         end
       end

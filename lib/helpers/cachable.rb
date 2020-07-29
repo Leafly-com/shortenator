@@ -3,14 +3,25 @@
 require 'logger'
 
 module Cachable
+  class AttributesError < StandardError
+    class << self
+      def base_message
+        'Model is not valid, it must be an object (perferably ActiveRecord)'
+      end
+    end
+  end
+
   module ClassMethods
     def caching_model
       config.caching_model
     end
 
     def validate_caching_model
-      raise 'Model is not valid, it must be an object (perferably ActiveRecord) with a `long_link` and `short_link`' unless caching_model_is_correct_fields?
-      raise 'Model is not valid, it must be an object (perferably ActiveRecord) with `find_by(long_link:)` and `create(long_link:, short_link:)` methods' unless caching_model_is_correct_methods?
+      errors = []
+      errors << 'a `long_link` and `short_link`' unless caching_model_is_correct_fields?
+      errors << '`find_by(long_link:)` and `create(long_link:, short_link:)` methods' unless caching_model_is_correct_methods?
+
+      raise AttributesError, "#{AttributesError.base_message} with #{errors.join('; ')}" unless errors.empty?
     end
 
     def caching_model_is_correct_fields?
