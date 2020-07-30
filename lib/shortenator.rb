@@ -77,7 +77,10 @@ module Shortenator
       link = replace_localhost(link) if link.include? 'localhost'
 
       if cached_link?(link)
-        caching_model.where(long_link: link).first.short_link
+        short_link = caching_model.where(long_link: link).first.short_link
+
+        short_link.slice! 'https://' if config.remove_protocol
+        short_link
       else
         loop do
           begin
