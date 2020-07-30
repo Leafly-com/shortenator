@@ -27,12 +27,10 @@ module Cachable
     def caching_model_is_correct_fields?
       attrs_to_find = %i[
         long_link
-        long_link=
         short_link
-        short_link=
       ]
 
-      caching_model.instance_methods(false).any? { |attr| attrs_to_find.include?(attr) }
+      caching_model.new.methods.any? { |method| attrs_to_find.include?(method) }
     end
 
     def caching_model_is_correct_methods?
