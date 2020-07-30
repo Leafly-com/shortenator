@@ -19,7 +19,7 @@ module Cachable
     def validate_caching_model
       errors = []
       errors << 'a `long_link` and `short_link`' unless caching_model_is_correct_fields?
-      errors << '`find_by(long_link:)` and `create(long_link:, short_link:)` methods' unless caching_model_is_correct_methods?
+      errors << '`where(long_link:)` and `create(long_link:, short_link:)` methods' unless caching_model_is_correct_methods?
 
       raise AttributesError, "#{AttributesError.base_message} with #{errors.join('; ')}" unless errors.empty?
     end
@@ -35,7 +35,7 @@ module Cachable
 
     def caching_model_is_correct_methods?
       methods_to_find = %i[
-        find_by
+        where
         create
       ]
 
@@ -45,7 +45,7 @@ module Cachable
     def cached_link?(link)
       return false if caching_model.nil?
 
-      results = caching_model.find_by(long_link: link)
+      results = caching_model.where(long_link: link)
       case results.size
       when 0
         false

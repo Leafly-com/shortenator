@@ -183,12 +183,12 @@ RSpec.describe Shortenator do
 
           it 'makes a bitly call and saves the link' do
             # Given
-            allow(BitlyLinks).to(receive(:find_by).with(long_link: url).and_return([]))
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([]))
             allow(BitlyLinks).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
 
             # Expect
             # A call to find an existing link
-            expect(caching_model).to(receive(:find_by).with(long_link: url).and_return([]))
+            expect(caching_model).to(receive(:where).with(long_link: url).and_return([]))
             # a call to bitly
             mock_object = instance_double(Bitly::API::Bitlink, link: 'https://leafly.info/2CgYGWs')
             expect_any_instance_of(Bitly::API::Client).to(receive(:create_bitlink).and_return(mock_object))
@@ -203,11 +203,11 @@ RSpec.describe Shortenator do
             returned_data.long_link = url
             returned_data.short_link = 'https://leafly.info/2CgYGWs'
             # Given
-            allow(BitlyLinks).to(receive(:find_by).with(long_link: url).and_return([returned_data]))
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([returned_data]))
 
             # Expect
             # A call to find an existing link
-            expect(caching_model).to(receive(:find_by).with(long_link: url).and_return([returned_data]))
+            expect(caching_model).to(receive(:where).with(long_link: url).and_return([returned_data]))
 
             # no call to bitly
             # call to find expected w/result
@@ -219,7 +219,7 @@ RSpec.describe Shortenator do
             returned_data.long_link = url
             returned_data.short_link = 'https://leafly.info/2CgYGWs'
             # Given
-            allow(BitlyLinks).to(receive(:find_by).with(long_link: url).and_return([returned_data, returned_data]))
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([returned_data, returned_data]))
 
             # Expect
             # a call to bitly
@@ -237,7 +237,7 @@ RSpec.describe Shortenator do
           let(:caching_model) { LilLinks }
 
           it 'throws an error' do
-            expect { subject }.to raise_error(Cachable::AttributesError, /`find_by\(long_link:\)` and `create\(long_link:, short_link:\)`/)
+            expect { subject }.to raise_error(Cachable::AttributesError, /`where\(long_link:\)` and `create\(long_link:, short_link:\)`/)
           end
         end
       end
@@ -254,7 +254,7 @@ class BitlyLinks
     :long_link,
     :short_link
 
-  def find_by(*args); end
+  def where(*args); end
 
   def create(*args); end
 end
@@ -264,7 +264,7 @@ class Shlinks
     :wumbo_link,
     :mini_link
 
-  def find_by(*args); end
+  def where(*args); end
 
   def create(*args); end
 end
