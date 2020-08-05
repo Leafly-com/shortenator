@@ -57,10 +57,6 @@ module Shortenator
       unless Integer === config.retry_amount && config.retry_amount >= 0
         raise Error, "retry amount must be a number equal or greater than 0, saw #{config.retry_amount}"
       end
-
-      unless caching_model.nil?
-        validate_caching_model
-      end
     end
 
     def shortenable_link?(link, domains, ignore_200_check)
@@ -86,7 +82,7 @@ module Shortenator
           begin
             bitly_response = client.create_bitlink(long_url: link, tags: tags, group_guid: bitly_group_guid)
             short_link = bitly_response.link
-            caching_model&.create(long_link: link, short_link: short_link)
+            save_link(link, short_link)
 
             short_link.slice! 'https://' if config.remove_protocol
 

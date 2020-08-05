@@ -13,15 +13,16 @@ module Cachable
 
   module ClassMethods
     def caching_model
-      config.caching_model
+      config.caching_model if !config.caching_model.nil? && caching_model_valid?
     end
 
-    def validate_caching_model
+    def caching_model_valid?
       errors = []
       errors << 'a `long_link` and `short_link`' unless caching_model_is_correct_fields?
       errors << '`where(long_link:)` and `create(long_link:, short_link:)` methods' unless caching_model_is_correct_methods?
+      Logger.new(STDOUT).error("#{AttributesError.base_message} with #{errors.join('; ')}") unless errors.empty?
 
-      raise AttributesError, "#{AttributesError.base_message} with #{errors.join('; ')}" unless errors.empty?
+      errors.empty?
     end
 
     def caching_model_is_correct_fields?
@@ -30,7 +31,7 @@ module Cachable
         short_link
       ]
 
-      instance = caching_model.new
+      instance = config.caching_model.new
       attrs_to_find.all? { |attr| instance.respond_to? attr }
     end
 
@@ -40,7 +41,7 @@ module Cachable
         create
       ]
 
-      instance = caching_model.new
+      instance = config.caching_model.new
       methods_to_find.all? { |method| instance.respond_to? method }
     end
 
@@ -57,6 +58,10 @@ module Cachable
         Logger.new(STDOUT).info { 'found more than one shortened link, will be using first one' }
         true
       end
+    end
+
+    def save_link(long_link, short_link)
+      caching_model&.create(long_link: long_link, short_link: short_link)
     end
   end
 

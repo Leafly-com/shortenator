@@ -48,3 +48,9 @@ class << VCR
     end
   }
 end
+
+def expect_all_instances_of(klass)
+  instance = instance_double(klass)
+  expect(klass).to receive(:new).at_least(:once) { instance }
+  expect(instance)
+end

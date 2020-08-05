@@ -226,14 +226,18 @@ RSpec.describe Shortenator do
           let(:caching_model) { Shlinks }
 
           it 'throws an error' do
-            expect { subject }.to raise_error(Cachable::AttributesError, /`long_link` and `short_link`/)
+            expect_all_instances_of(Logger).to receive(:error).at_least(:once).with(/a `long_link` and `short_link`/)
+
+            subject
           end
         end
         context 'with model without correct methods' do
           let(:caching_model) { LilLinks }
 
           it 'throws an error' do
-            expect { subject }.to raise_error(Cachable::AttributesError, /`where\(long_link:\)` and `create\(long_link:, short_link:\)`/)
+            expect_all_instances_of(Logger).to receive(:error).at_least(:once).with(/`where\(long_link:\)` and `create\(long_link:, short_link:\)` methods/)
+
+            subject
           end
         end
       end
