@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'logger'
+
 RSpec.describe Shortenator do
   let(:bitly_token) { 'BITLY_TOKEN' }
   let(:domains) { ['leafly.com'] }
@@ -229,6 +231,26 @@ RSpec.describe Shortenator do
             expect_all_instances_of(Logger).to receive(:error).at_least(:once).with(/a `long_link` and `short_link`/)
 
             subject
+          end
+        end
+        context 'saves a link to reuse later when given model as a string' do
+          let(:caching_model) { 'BitlyLinks' }
+
+          it 'makes a bitly call and saves the link' do
+            # Given
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([]))
+            allow(BitlyLinks).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
+
+            # Expect
+            # A call to find an existing link
+            expect(BitlyLinks).to(receive(:where).with(long_link: url).and_return([]))
+            # a call to bitly
+            mock_object = instance_double(Bitly::API::Bitlink, link: 'https://leafly.info/2CgYGWs')
+            expect_any_instance_of(Bitly::API::Client).to(receive(:create_bitlink).and_return(mock_object))
+            # a call to cache
+            expect(BitlyLinks).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
+
+            expect(subject).to eq('text https://leafly.info/2CgYGWs')
           end
         end
         context 'with model without correct methods' do
