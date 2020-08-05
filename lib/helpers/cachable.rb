@@ -6,7 +6,7 @@ module Cachable
   class AttributesError < StandardError
     class << self
       def base_message
-        'Model is not valid, it must be an object (perferably ActiveRecord)'
+        'Model is not valid, it must be an object (preferably ActiveRecord)'
       end
     end
   end
@@ -30,7 +30,8 @@ module Cachable
         short_link
       ]
 
-      caching_model.new.methods.any? { |method| attrs_to_find.include?(method) }
+      instance = caching_model.new
+      attrs_to_find.all? { |attr| instance.respond_to? attr }
     end
 
     def caching_model_is_correct_methods?
@@ -39,14 +40,15 @@ module Cachable
         create
       ]
 
-      caching_model.singleton_class.instance_methods.any? { |method| methods_to_find.include?(method) }
+      instance = caching_model.new
+      methods_to_find.all? { |method| instance.respond_to? method }
     end
 
     def cached_link?(link)
       return false if caching_model.nil?
 
       results = caching_model.where(long_link: link)
-      case results.size
+      case results.count
       when 0
         false
       when 1

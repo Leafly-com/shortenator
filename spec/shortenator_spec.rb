@@ -174,10 +174,6 @@ RSpec.describe Shortenator do
       end
 
       context 'with caching_model set' do
-        before do
-          # allow(BitlyLinks).to(receive(:find).with(long_url: url).and_return(["https://leafly.info/2CgYGWs"]))
-        end
-
         context 'saves a link to reuse later' do
           let(:caching_model) { BitlyLinks }
 
