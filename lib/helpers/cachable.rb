@@ -45,8 +45,7 @@ module Cachable
         create
       ]
 
-      instance = model.new
-      methods_to_find.all? { |method| instance.respond_to? method }
+      methods_to_find.all? { |method| model.respond_to? method }
     end
 
     def cached_link?(link)

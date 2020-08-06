@@ -276,9 +276,9 @@ class BitlyLinks
     :long_link,
     :short_link
 
-  def where(*args); end
+  def self.where(*args); end
 
-  def create(*args); end
+  def self.create(*args); end
 end
 
 class Shlinks
@@ -286,9 +286,9 @@ class Shlinks
     :wumbo_link,
     :mini_link
 
-  def where(*args); end
+  def self.where(*args); end
 
-  def create(*args); end
+  def self.create(*args); end
 end
 
 class LilLinks
