@@ -2,6 +2,7 @@
 
 require 'bundler/setup'
 require 'shortenator'
+require 'helpers/cachable'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -46,4 +47,10 @@ class << VCR
       WebMock.disable_net_connect!
     end
   }
+end
+
+def expect_all_instances_of(klass)
+  instance = instance_double(klass)
+  expect(klass).to receive(:new).at_least(:once) { instance }
+  expect(instance)
 end

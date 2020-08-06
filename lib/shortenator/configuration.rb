@@ -4,13 +4,14 @@ module Shortenator
   class Configuration
     attr_accessor \
       :bitly_group_guid,
-      :bitly_token, 
-      :default_tags, 
-      :domains, 
-      :ignore_200_check, 
-      :localhost_replacement, 
-      :remove_protocol, 
-      :retry_amount, 
+      :bitly_token,
+      :default_tags,
+      :domains,
+      :ignore_200_check,
+      :localhost_replacement,
+      :remove_protocol,
+      :retry_amount,
+      :caching_model
 
     def initialize
       @bitly_group_guid = nil
@@ -21,6 +22,7 @@ module Shortenator
       @localhost_replacement = 'example.com'
       @remove_protocol = false
       @retry_amount = 3
+      @caching_model = nil
     end
   end
 end

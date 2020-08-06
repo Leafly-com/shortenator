@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'logger'
+
 RSpec.describe Shortenator do
   let(:bitly_token) { 'BITLY_TOKEN' }
   let(:domains) { ['leafly.com'] }
@@ -9,6 +11,7 @@ RSpec.describe Shortenator do
   let(:localhost_replacement) { 'example.com' }
   let(:default_tags) { [] }
   let(:bitly_group_guid) { nil }
+  let(:caching_model) { nil }
 
   before do
     Shortenator.configure do |config|
@@ -20,6 +23,7 @@ RSpec.describe Shortenator do
       config.localhost_replacement = localhost_replacement
       config.default_tags = default_tags
       config.bitly_group_guid = bitly_group_guid
+      config.caching_model = caching_model
     end
   end
 
@@ -170,10 +174,125 @@ RSpec.describe Shortenator do
           expect(get_bitlink_details('leafly.info/2CgYGWs')['references']['group']).to end_with(custom_bitly_group_guid)
         end
       end
+
+      context 'with caching_model set' do
+        context 'saves a link to reuse later' do
+          let(:caching_model) { BitlyLinks }
+
+          it 'makes a bitly call and saves the link' do
+            # Given
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([]))
+            allow(BitlyLinks).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
+
+            # Expect
+            # A call to find an existing link
+            expect(caching_model).to(receive(:where).with(long_link: url).and_return([]))
+            # a call to bitly
+            mock_object = instance_double(Bitly::API::Bitlink, link: 'https://leafly.info/2CgYGWs')
+            expect_any_instance_of(Bitly::API::Client).to(receive(:create_bitlink).and_return(mock_object))
+            # a call to cache
+            expect(caching_model).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
+
+            expect(subject).to eq('text https://leafly.info/2CgYGWs')
+          end
+
+          it 'since the link is saved, no bitly call made' do
+            returned_data = BitlyLinks.new
+            returned_data.long_link = url
+            returned_data.short_link = 'https://leafly.info/2CgYGWs'
+            # Given
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([returned_data]))
+
+            # Expect
+            # A call to find an existing link
+            expect(caching_model).to(receive(:where).with(long_link: url).and_return([returned_data]))
+
+            # no call to bitly
+            # call to find expected w/result
+            expect(subject).to eq('text https://leafly.info/2CgYGWs')
+          end
+
+          it 'will log warning when more than one shortened link' do
+            returned_data = BitlyLinks.new
+            returned_data.long_link = url
+            returned_data.short_link = 'https://leafly.info/2CgYGWs'
+            # Given
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([returned_data, returned_data]))
+
+            # Expect
+            # a call to bitly
+            expect(subject).to eq('text https://leafly.info/2CgYGWs')
+          end
+        end
+        context 'with model with incorrect attributes' do
+          let(:caching_model) { Shlinks }
+
+          it 'throws an error' do
+            expect_all_instances_of(Logger).to receive(:error).at_least(:once).with(/a `long_link` and `short_link`/)
+
+            subject
+          end
+        end
+        context 'saves a link to reuse later when given model as a string' do
+          let(:caching_model) { 'BitlyLinks' }
+
+          it 'makes a bitly call and saves the link' do
+            # Given
+            allow(BitlyLinks).to(receive(:where).with(long_link: url).and_return([]))
+            allow(BitlyLinks).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
+
+            # Expect
+            # A call to find an existing link
+            expect(BitlyLinks).to(receive(:where).with(long_link: url).and_return([]))
+            # a call to bitly
+            mock_object = instance_double(Bitly::API::Bitlink, link: 'https://leafly.info/2CgYGWs')
+            expect_any_instance_of(Bitly::API::Client).to(receive(:create_bitlink).and_return(mock_object))
+            # a call to cache
+            expect(BitlyLinks).to(receive(:create).with(long_link: url, short_link: 'https://leafly.info/2CgYGWs'))
+
+            expect(subject).to eq('text https://leafly.info/2CgYGWs')
+          end
+        end
+        context 'with model without correct methods' do
+          let(:caching_model) { LilLinks }
+
+          it 'throws an error' do
+            expect_all_instances_of(Logger).to receive(:error).at_least(:once).with(/`where\(long_link:\)` and `create\(long_link:, short_link:\)` methods/)
+
+            subject
+          end
+        end
+      end
     end
   end
 end
 
 def get_bitlink_details(bitlink)
   Shortenator.bitly_client.bitlink(bitlink: bitlink).response.body
+end
+
+class BitlyLinks
+  attr_accessor \
+    :long_link,
+    :short_link
+
+  def where(*args); end
+
+  def create(*args); end
+end
+
+class Shlinks
+  attr_accessor \
+    :wumbo_link,
+    :mini_link
+
+  def where(*args); end
+
+  def create(*args); end
+end
+
+class LilLinks
+  attr_accessor \
+    :long_link,
+    :short_link
 end
