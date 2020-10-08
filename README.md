@@ -35,10 +35,12 @@ require 'shortenator'
 Shortenator.configure do |config|
   config.domains = ['example.com'] # These are the array of domains that will be shortened if found
   config.bitly_token = ENV['BITLY_TOKEN']
-  config.remove_protocol = true # OPTIONAL false by default
+  config.remove_protocol = true # OPTIONAL false by default, this will remove the `https://` from the beginning of the shortened link.
   config.default_tags = ['repo_name'] # OPTIONAL empty by default, let you auto tag all bit.ly links for organization
   config.bitly_group_guid = ENV['DEFAULT_BITLY_GROUP_GUID'] #OPTIONAL the bitly docs recommend to set this in the event you accidently switch your token's group and hit a smaller limit than you intended. source: https://dev.bitly.com/v4/#operation/createFullBitlink
   config.caching_model = LinkLookup # OPTIONAL this allows you to save your shortened links to your own database table to avoid hitting a service's API rate limits, more details below.
+  config.ignore_200_check = true # OPTIONAL false by default, this will shorten links regardless if the link throws any errors.
+  config.localhost_replacement = 'website.com' # OPTIONAL 'example.com' by default, this is mainly used for testing purposes because bitly will not shorten localhost links, but if you need for whatever the reason ¯\_(ツ)_/¯
 end
 ```
 
