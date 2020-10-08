@@ -1,12 +1,14 @@
 # Shortenator
+
 Has this ever happened to you?
+
 > **Manager**: We need to cut costs in our texting service! Our links are creating additional texts. How can we fix this?
 
-*Then this is the gem for you!*
+_Then this is the gem for you!_
 
 Supply the domains you'd like to be shorten and start passing your text through the Shortenator TODAY!
 
-<small>*currently only works with bitly. no purchase necessary. apache license 2.0 terms and conditions apply*</small>
+<small>_currently only works with bitly. no purchase necessary. apache license 2.0 terms and conditions apply_</small>
 
 ## Installation
 
@@ -27,7 +29,9 @@ Or install it yourself as:
 ## Usage
 
 ### Configuration:
+
 To configure Shortenator create `shortenator.rb` in `/config/initializers` then copy and modify the following code block to your liking:
+
 ```ruby
 # in config/initializers/shortenator.rb
 require 'shortenator'
@@ -44,10 +48,10 @@ Shortenator.configure do |config|
 end
 ```
 
-Setting `config.remove_protocol` to `true` will remove the `https://` from the beginning of the shortened link, saving you some more precious characters.
-
 ### Implementation:
+
 To use Shortenator call `search_and_shorten_links`
+
 ```ruby
 def send_sms(text, number)
   text_with_shortened_links = Shortenator.search_and_shorten_links(text)
@@ -60,24 +64,28 @@ send_sms('Thanks for your order, track the status here: http://example.com/order
 ```
 
 Need to tag certain things differently depending on the situation? You can use these params separately, or together, at runtime.
+
 ```ruby
   # Sometimes need to add additional tags for certain parts of your app? Use the `additional_tags:` param!
   Shortenator.search_and_shorten_links("text", additional_tags: ["new feature"])
 ```
+
 ```ruby
   # Need to over write the tags set in the configs? Use the `tags:` param!
   Shortenator.search_and_shorten_links("text", tags: ["new tag1", "new tag2"])
 ```
 
 Have multiple groups that links can be shortened from? Bitly groups can set their own custom domains and can have different limits from each other while a part of the same organization. Here's how you can use different groups all around your code
+
 ```ruby
   Shortenator.search_and_shorten_links("text", bitly_group_guid: ENV['OTHER_BITLY_GROUP_GUID')
 ```
 
 Need to cache your shortened links? Here's how to achieve that.
-Recommended approach: 
-* An ActiveRecord model with a `long_link` and `short_link` as strings
-* in `shortenator.rb` add to the config like so: `config.caching_model = <MODEL NAME HERE>`
+Recommended approach:
+
+- An ActiveRecord model with a `long_link` and `short_link` as strings
+- in `shortenator.rb` add to the config like so: `config.caching_model = <MODEL NAME HERE>`
 
 Now once a link that's been shortened before attempts to be shortened, you'll save yourself a call to whatever service you use.
 
